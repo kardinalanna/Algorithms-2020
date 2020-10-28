@@ -2,7 +2,13 @@ package lesson1;
 
 import kotlin.NotImplementedError;
 
-@SuppressWarnings("unused")
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Pattern;
+
+//@SuppressWarnings("unused")
 public class JavaTasks {
     /**
      * Сортировка времён
@@ -34,9 +40,68 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortTimes(String inputName, String outputName) {
-        throw new NotImplementedError();
+    //O(n log(n)) - по времени
+    //O(n) - по времени
+    static public void sortTimes(String inputName, String outputName) throws IOException {
+        List<String[]> list = new ArrayList<String[]>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputName))) {
+            String st;
+            while ((st = reader.readLine()) != null) {
+                if (!Pattern.matches("\\d{2}:\\d{2}:\\d{2}\\s(AM|PM)", st)) throw new IllegalArgumentException();
+                list.add(st.split(":| "));
+            }
+            int[] newFormat = new int[list.size()];
+            for (int i = 0; i < list.size(); i++) {
+                String[] p = list.get(i);
+                int hour = Integer.parseInt(p[0]);
+                int min = Integer.parseInt(p[1]);
+                int sec = Integer.parseInt(p[2]);
+                int time = hour * 3600 + min * 60 + sec;
+                switch (p[3]) {
+                    case "AM":
+                        if (hour != 12) newFormat[i] = time;
+                        else newFormat[i] = time - 12 * 3600;
+                        break;
+                    case "PM":
+                        if (hour != 12) newFormat[i] = time + 12 * 3600;
+                        else newFormat[i] = time;
+                        break;
+                }
+            }
+            Sorts.mergeSort(newFormat);
+            for (int time : newFormat) {
+                int hourSt = time / 3600;
+                int minSt = (time % 3600) / 60;
+                int secSt = time % 3600 % 60;
+                writer.write(writeString(hourSt, minSt, secSt) + "\n");
+            }
+        }
     }
+
+
+    static String writeString(int hour, int min, int sec) {
+        String hourRes;
+        String minRes;
+        String secRes;
+        String spHour = null;
+        if ((hour - 12 > 0 && hour - 12 < 10)) spHour = "0" + (hour - 12);
+        else if (hour - 12 > 0) spHour = Integer.toString(hour - 12);
+        if (hour < 10) hourRes = "0" + hour;
+        else hourRes = Integer.toString(hour);
+        if (min < 10) minRes = "0" + min;
+        else minRes = Integer.toString(min);
+        if (sec < 10) secRes = "0" + sec;
+        else secRes = Integer.toString(sec);
+        if (hour < 12) {
+            if (hour == 0) return "12:" + minRes + ":" + secRes + " AM";
+            else return hourRes + ":" + minRes + ":" + secRes + " AM";
+        } else {
+            if (hour == 12) return "12" + ":" + minRes + ":" + secRes + " PM";
+            else return spHour + ":" + minRes + ":" + secRes + " PM";
+        }
+    }
+
 
     /**
      * Сортировка адресов
@@ -98,10 +163,32 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
-    }
+    //O(n) - временные затраты
+    //O(n) - затраты по памяти
+    static public void sortTemperatures(String inputName, String outputName) throws IOException {
+        List<Integer> posList = new ArrayList<>();
+        List<Integer> negList = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputName))) {
+            String st;
+            while ((st = reader.readLine()) != null) {
+                int elem = (int) Math.round(Double.parseDouble(st) * 10);
+                if (elem >= 0) posList.add(elem);
+                else negList.add(Math.abs(elem));
+            }
+            int[] posAr = new int[posList.size()];
+            int[] negAr = new int[negList.size()];
 
+            for (int i = 0; i < Math.max(negAr.length, posAr.length); i++) {
+                if (i < negAr.length) negAr[i] = negList.get(i);
+                if (i < posAr.length) posAr[i] = posList.get(i);
+            }
+            posAr = Sorts.countingSort(posAr, 5000);
+            negAr = Sorts.countingSort(negAr, 2730);
+            for (int d = negAr.length - 1; d >= 0; d--) writer.write("-" + (negAr[d] / 10) + "." + (negAr[d] % 10) + "\n");
+            for (int d : posAr) writer.write(d / 10 + "." + (d % 10) + "\n");
+        }
+    }
     /**
      * Сортировка последовательности
      *
@@ -131,10 +218,36 @@ public class JavaTasks {
      * 2
      * 2
      */
-    static public void sortSequence(String inputName, String outputName) {
-        throw new NotImplementedError();
+    //O(n) - временные затраты
+    //O(n) - затраты по памяти
+    static public void sortSequence(String inputName, String outputName) throws IOException {
+        ArrayList<Integer> list = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputName));
+             BufferedWriter writer = new BufferedWriter(new FileWriter(outputName))) {
+            String st;
+            while ((st = reader.readLine()) != null) {
+                list.add(Integer.parseInt(st));
+            }
+            HashMap<Integer, Integer> map = new HashMap<>();
+            for (Integer element : list) {
+                if (map.containsKey(element)) map.put(element, map.get(element) + 1);
+                else map.put(element, 0);
+            }
+            int max = -1;
+            int maxIn = 0;
+            for (Integer element : map.keySet()) {
+                int count = map.get(element);
+                if (count > max || (count == max && element < maxIn)) {
+                    max = count;
+                    maxIn = element;
+                }
+            }
+            for (int f : list) {
+                if (f != maxIn) writer.write(f + "\n");
+            }
+            for (int j = 0; j <= max; j++) writer.write(maxIn + "\n");
+        }
     }
-
     /**
      * Соединить два отсортированных массива в один
      *
