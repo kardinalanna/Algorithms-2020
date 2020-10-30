@@ -101,6 +101,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     //O(n) - по времени
     //O(n) - по памяти
+    //тесты полные
     @Override
     public boolean remove(Object o) {
         if (root == null) return false;
@@ -121,7 +122,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
                 while (theLeft.left != null) {
                     theLeft = theLeft.left;
                 }
-                remove(start.right, theLeft.value); // потом удаляем чамый левый
+                remove(start.right, theLeft.value); // потом удаляем самый левый
                 theLeft.left = removeEl.left;
                 if (start.left != null) removeEl.left.parent = theLeft;
                 theLeft.right = start.right;
@@ -179,13 +180,17 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        return new BinarySearchTreeIterator();
+        return new BinarySearchTreeIterator(root);
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
+        private Stack<Node<T>> stack;
+        Node<T> previous;
+        boolean flag = false;
 
-        private BinarySearchTreeIterator() {
-            // Добавьте сюда инициализацию, если она необходима.
+        private BinarySearchTreeIterator(Node<T> root) {
+            stack = new Stack<>();
+            goLeft(root);
         }
 
         /**
@@ -200,8 +205,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            return !stack.empty();
         }
 
         /**
@@ -217,10 +221,28 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          * <p>
          * Средняя
          */
+        //тесты полные
+        //O(n) - по времени
+        //O(n) - по памяти
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            flag = true;
+            if (stack.empty()) throw new IllegalStateException();
+            Node<T> node = stack.pop();
+            if (node.right != null) {
+                if (node.right.left != null) {
+                    goLeft(node.right);
+                } else stack.push(node.right);
+            }
+            previous = node;
+            return node.value;
+        }
+
+        private void goLeft(Node<T> root) {
+            while (root != null) {
+                stack.push(root);
+                root = root.left;
+            }
         }
 
         /**
@@ -235,10 +257,14 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          * <p>
          * Сложная
          */
+        //тесты полные
+        //O(n) - по времени
+        //O(n) - по памяти
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            if (!flag) throw new IllegalStateException();
+            flag = false;
+            BinarySearchTree.this.remove(previous.value);
         }
     }
 
