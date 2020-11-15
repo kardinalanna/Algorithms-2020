@@ -100,7 +100,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      * Средняя
      */
     //O(n) - по времени
-    //O(n) - по памяти
+    //O(log n) - по памяти
     //тесты полные
     @Override
     public boolean remove(Object o) {
@@ -184,12 +184,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
-        private Stack<Node<T>> stack;
+        ArrayDeque<Node<T>> deque;
         Node<T> previous;
         boolean flag = false;
 
         private BinarySearchTreeIterator(Node<T> root) {
-            stack = new Stack<>();
+            deque = new ArrayDeque<>();
             goLeft(root);
         }
 
@@ -205,7 +205,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          */
         @Override
         public boolean hasNext() {
-            return !stack.empty();
+            return !deque.isEmpty();
         }
 
         /**
@@ -227,12 +227,12 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         @Override
         public T next() {
             flag = true;
-            if (stack.empty()) throw new IllegalStateException();
-            Node<T> node = stack.pop();
+            if (deque.isEmpty()) throw new IllegalStateException();
+            Node<T> node = deque.pop();
             if (node.right != null) {
                 if (node.right.left != null) {
                     goLeft(node.right);
-                } else stack.push(node.right);
+                } else deque.push(node.right);
             }
             previous = node;
             return node.value;
@@ -240,7 +240,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 
         private void goLeft(Node<T> root) {
             while (root != null) {
-                stack.push(root);
+                deque.push(root);
                 root = root.left;
             }
         }
