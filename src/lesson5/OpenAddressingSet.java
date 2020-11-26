@@ -111,7 +111,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      * Средняя
      */
     //O(n) - по времени
-    //O(n) - по памяти
+    //O(1) - по памяти
     @Override
     public boolean remove(Object o) {
         int thisSize = size;

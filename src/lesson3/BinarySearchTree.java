@@ -100,7 +100,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      * Средняя
      */
     //O(n) - по времени
-    //O(log n) - по памяти
+    //O(1) - по памяти
     //тесты полные
     @Override
     public boolean remove(Object o) {
