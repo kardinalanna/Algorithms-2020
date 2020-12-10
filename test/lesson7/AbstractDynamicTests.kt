@@ -4,11 +4,22 @@ import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
     fun longestCommonSubSequence(longestCommonSubSequence: (String, String) -> String) {
+        assertEquals("", longestCommonSubSequence("", ""))
         assertEquals("", longestCommonSubSequence("мой мир", "я"))
         assertEquals("1", longestCommonSubSequence("1", "1"))
         assertEquals("13", longestCommonSubSequence("123", "13"))
         assertEquals("здс", longestCommonSubSequence("здравствуй мир", "мы здесь"))
         assertEquals("emt ole", longestCommonSubSequence("nematode knowledge", "empty bottle"))
+        assertEquals(
+            " амурай оа рее ем оит смерть может прити во и и уереть", longestCommonSubSequence(
+                "- Самурай обязан, в первую очередь, всё" +
+                        "время помнить, что смерть может прийти в любой" +
+                        "момент, и если наступит время умирать, то сделать" +
+                        "это самурай обязан с достоинством.",
+                "Если самурай проиграл сражение и ему грозит смерть," +
+                        " ему нужно торжественно произнести своё имя и умереть"
+            )
+        )
         val expectedLength = "e kerwelkkd r".length
         assertEquals(
             expectedLength, longestCommonSubSequence(
@@ -41,12 +52,12 @@ abstract class AbstractDynamicTests {
         assertEquals(listOf(), longestIncreasingSubSequence(listOf()))
         assertEquals(listOf(1), longestIncreasingSubSequence(listOf(1)))
         assertEquals(listOf(1, 2), longestIncreasingSubSequence(listOf(1, 2)))
+        assertEquals(listOf(2, 8, 9, 12), longestIncreasingSubSequence(listOf(2, 8, 5, 9, 12, 6)))
         assertEquals(listOf(2), longestIncreasingSubSequence(listOf(2, 1)))
         assertEquals(
             listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
             longestIncreasingSubSequence(listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
         )
-        assertEquals(listOf(2, 8, 9, 12), longestIncreasingSubSequence(listOf(2, 8, 5, 9, 12, 6)))
         assertEquals(
             listOf(23, 34, 56, 87, 91, 98, 140, 349), longestIncreasingSubSequence(
                 listOf(
@@ -55,6 +66,8 @@ abstract class AbstractDynamicTests {
                 )
             )
         )
+        assertEquals(listOf(-1, 0, 5, 10), longestIncreasingSubSequence(listOf(-1, -4, 0, 5, 10, -6, 1)))
+        assertEquals(listOf(-10, -5, -3, -1), longestIncreasingSubSequence(listOf(-10, -11, -5, -9, -3, -1, -2)))
     }
 
     fun shortestPathOnField(shortestPathOnField: (String) -> Int) {
